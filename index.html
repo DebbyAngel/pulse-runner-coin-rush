@@ -321,13 +321,23 @@ function showOverlay(over, stats, btn) {
 // ---------- Leaderboard ----------
 const BOARD_KEY = 'pulse_runner_board';
 const SNG_SUBMIT = 'startng:submit-score', SNG_BOARD = 'startng:leaderboard';
-let board = [], boardRemote = false;
-try { board = JSON.parse(localStorage.getItem(BOARD_KEY)) || []; } catch (e) {}
+// One row per player: keep only each player's best score.
+function bestPerPlayer(list) {
+  const m = new Map();
+  list.forEach(r => {
+    const k = String(r.name || 'Player').trim().toLowerCase();
+    if (!m.has(k) || r.score > m.get(k).score) m.set(k, r);
+  });
+  return [...m.values()].sort((a, b) => b.score - a.score).slice(0, 10);
+}
+let board = [], remote = null;   // board = this device, remote = start.ng global list
+try { board = bestPerPlayer(JSON.parse(localStorage.getItem(BOARD_KEY)) || []); } catch (e) {}
 function renderBoard() {
-  $('boardTitle').style.display =$('board').style.display = board.length ? '' : 'none';
-  $('boardTitle').textContent = boardRemote ? 'Pulse Runner leaderboard' : 'Pulse Runner top runs on this device';
+  const list = remote || board;
+  $('boardTitle').style.display = $('board').style.display = list.length ? '' : 'none';
+  $('boardTitle').textContent = remote ? 'Pulse Runner leaderboard' : 'Pulse Runner best scores on this device';
   $('board').innerHTML = '';
-  board.slice(0, 5).forEach((r, i) => {
+  list.slice(0, 5).forEach((r, i) => {
     const li = document.createElement('li'); li.innerHTML = '<span></span><span></span>';
     li.children[0].textContent = `${i + 1}. ${r.name}`; li.children[1].textContent = r.score;
     $('board').append(li);
@@ -336,11 +346,12 @@ function renderBoard() {
 async function loadRemoteBoard() {
   const r = await askStartNg({ type: SNG_BOARD, game: 'pulse-runner' }, 'startng:leaderboard-data', 3000);
   if (Array.isArray(r?.entries) && r.entries.length) {
-    board = r.entries.map(e => ({ name: e.name || 'Player', score: +e.score || 0 })); boardRemote = true; renderBoard();
+    remote = bestPerPlayer(r.entries.map(e => ({ name: e.name || 'Player', score: +e.score || 0 })));
+    renderBoard();
   }
 }
 function recordRun(run) {
-  board.push(run); board.sort((a, b) => b.score - a.score); board = board.slice(0, 10);
+  board = bestPerPlayer([...board, run]);
   try { localStorage.setItem(BOARD_KEY, JSON.stringify(board)); } catch (e) {}
   renderBoard();
   askStartNg({ type: SNG_SUBMIT, score: run.score }, 'startng:score-submitted', 3000)
