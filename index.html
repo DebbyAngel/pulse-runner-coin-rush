@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Zedu Coin Collector - Deluxe Edition</title>
+<title>Pulse Runner: Coin Rush - Deluxe Edition</title>
 <style>
   :root { --cyan:#00f3ff; --pink:#ff2d95; --gold:#ffd54a; }
   * { box-sizing:border-box; }
@@ -11,26 +11,26 @@
          font-family:'Segoe UI',Tahoma,Verdana,sans-serif; }
   canvas { display:block; }
   .panel { position:absolute; background:rgba(10,10,25,.75); border:1px solid rgba(0,243,255,.35);
-           border-radius:14px; padding:12px 22px; pointer-events:none; backdrop-filter:blur(8px);
-           box-shadow:0 10px 40px rgba(0,243,255,.12); }
+             border-radius:14px; padding:12px 22px; pointer-events:none; backdrop-filter:blur(8px);
+             box-shadow:0 10px 40px rgba(0,243,255,.12); }
   #ui { top:20px; left:20px; }
   #best { top:20px; right:20px; text-align:right; }
   #player-name { font-weight:700; color:var(--cyan); font-size:15px; }
   #score-board { font-size:24px; font-weight:800; color:var(--gold); margin-top:4px; text-shadow:0 0 12px rgba(255,213,74,.6); }
   #dist { font-size:13px; opacity:.8; margin-top:2px; }
   #controls-hint { bottom:22px; left:50%; transform:translateX(-50%); border-color:rgba(255,45,149,.4);
-                   border-radius:30px; font-size:13px; font-weight:600; white-space:nowrap; }
+                     border-radius:30px; font-size:13px; font-weight:600; white-space:nowrap; }
   #overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-             background:radial-gradient(circle,rgba(7,6,20,.5),rgba(7,6,20,.9)); }
+               background:radial-gradient(circle,rgba(7,6,20,.5),rgba(7,6,20,.9)); }
   .card { text-align:center; padding:36px 48px; }
-  h1 { margin:0; font-size:clamp(48px,10vw,96px); letter-spacing:.14em; color:var(--gold);
-       text-shadow:0 0 24px rgba(255,160,0,.7),0 4px 0 #b36b00; }
+  h1 { margin:0; font-size:clamp(36px,8vw,72px); letter-spacing:.1em; color:var(--gold);
+         text-shadow:0 0 24px rgba(255,160,0,.7),0 4px 0 #b36b00; }
   h2 { margin:4px 0 22px; font-size:clamp(16px,3vw,28px); letter-spacing:.35em; color:var(--cyan);
-       text-shadow:0 0 14px rgba(0,243,255,.8); font-weight:600; }
+         text-shadow:0 0 14px rgba(0,243,255,.8); font-weight:600; }
   #stats { min-height:26px; margin-bottom:18px; font-size:18px; color:#cfd8ff; }
   button { font:inherit; font-weight:800; font-size:18px; letter-spacing:.15em; padding:14px 46px; border-radius:40px;
-           border:2px solid var(--cyan); background:rgba(0,243,255,.12); color:#fff; cursor:pointer;
-           box-shadow:0 0 24px rgba(0,243,255,.45); transition:.15s; }
+             border:2px solid var(--cyan); background:rgba(0,243,255,.12); color:#fff; cursor:pointer;
+             box-shadow:0 0 24px rgba(0,243,255,.45); transition:.15s; }
   button:hover { background:var(--cyan); color:#05050a; transform:scale(1.05); }
   button:focus-visible { outline:3px solid var(--gold); outline-offset:4px; }
   small { display:block; margin-top:16px; opacity:.6; }
@@ -58,8 +58,8 @@
 <div id="controls-hint" class="panel">Left / Right or A / D to move &nbsp;|&nbsp; Up, W or Space to jump &nbsp;|&nbsp; Swipe on mobile</div>
 <div id="overlay">
   <div class="card">
-    <h1>ZEDU</h1>
-    <h2 id="sub">COIN COLLECTOR</h2>
+    <h1>PULSE RUNNER</h1>
+    <h2 id="sub">COIN RUSH</h2>
     <div id="stats">Grab coins. Dodge the barriers.</div>
     <button id="startBtn">Play</button>
     <small>or press Space</small>
@@ -71,7 +71,7 @@ const LANE = 2.2, BASE = 22, MAXSPD = 42, SPAN = 180;
 let state = 'menu', overlayUp = true;
 let lane = 0, speed = 9, distance = 0, score = 0, best = 0;
 let vy = 0, grounded = true, phase = 0, shake = 0, sinceSpawn = 0, spawnGap = 14;
-try { best = +localStorage.getItem('zedu_best') || 0; } catch (e) {}
+try { best = +localStorage.getItem('pulserunner_best') || 0; } catch (e) {}
 const $ = id => document.getElementById(id);
 const rand = (a, b) => a + Math.random() * (b - a);
 
@@ -277,7 +277,7 @@ function startGame() {
 function crash() {
   state = 'over'; shake = 1;
   burst(new THREE.Vector3(player.position.x, 1, 0), 'red', 24); beep(110, .5, 'sawtooth', .12);
-  if (score > best) { best = score; try { localStorage.setItem('zedu_best', best); } catch (e) {} }
+  if (score > best) { best = score; try { localStorage.setItem('pulserunner_best', best); } catch (e) {} }
   updateHUD();
   setTimeout(() => showOverlay('GAME OVER', `Coins: ${score}   |   Distance: ${Math.floor(distance)} m`, 'Play again'), 700);
 }
